@@ -45,7 +45,6 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
 
 password = b"This_is_password"
 key = hashlib.sha256(password).digest()
-print(binascii.hexlify(bytearray(key)))
 in_filename = 'secret.hwp'
 encrypt_file(key,in_filename, out_filename=None)
 print("Encrypted!")
