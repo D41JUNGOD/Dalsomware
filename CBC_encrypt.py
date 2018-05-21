@@ -1,17 +1,18 @@
 import os,random,struct,hashlib,binascii
 from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
 
-def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
+def encrypt_file(key, in_filename, out_filename=None, chunksize=65536):
     if not out_filename:
         out_filename = in_filename+".enc"
 
-    iv = bytes(''.join(chr(random.randint(0,0xFF)) for i in range(16)),encoding="utf-8")
+    iv = get_random_bytes(16)
     mode = AES.MODE_CBC
     encryptor = AES.new(key,mode,iv)
     filesize = os.path.getsize(in_filename)
 
     with open(in_filename,'rb') as infile:
-        with open(in_filename, 'wb') as outfile:
+        with open(out_filename, 'wb') as outfile:
             outfile.write(struct.pack('<Q', filesize))
             outfile.write(iv)
 
@@ -20,7 +21,7 @@ def encrypt_file(key, in_filename, out_filename=None, chunksize=64*1024):
                 if len(chunk) == 0:
                     break
                 elif len(chunk) % 16 != 0:
-                    chunk += ' '*(16-len(chunk) % 16)
+                    chunk += b' '*(16-len(chunk) % 16)
 
                 outfile.write(encryptor.encrypt(chunk))
 
@@ -30,7 +31,7 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
 
     with open(in_filename, 'rb') as infile:
         origsize = struct.unpack('<Q',infile.read(struct.calcsize('Q')))
-        iv = bytes(infile.read(16),encoding='utf-8')
+        iv = infile.read(16)
         mode = AES.MODE_CBC
         decryptor = AES.new(key,mode,iv)
 
@@ -40,17 +41,17 @@ def decrypt_file(key, in_filename, out_filename=None, chunksize=24*1024):
                 if len(chunk) == 0:
                     break
                 outfile.write(decryptor.decrypt(chunk))
-
-            outfile.truncate(origsize)
+            outfile.truncate(origsize[0])
 
 password = b"This_is_password"
 key = hashlib.sha256(password).digest()
 print(binascii.hexlify(bytearray(key)))
 in_filename = 'secret.hwp'
-encrypt_file(key,in_filename, out_filename='output')
+encrypt_file(key,in_filename, out_filename=None)
 print("Encrypted!")
 
 os.unlink(in_filename)
 
-decrypt_file(key,in_filename="output",out_filename="original.hwp")
-outfile = open('original.hwp')
+decrypt_file(key,in_filename=in_filename+".enc",out_filename=in_filename)
+print("Decrypted!")
+
