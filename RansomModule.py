@@ -1,10 +1,9 @@
-import os,random,struct,hashlib,binascii,Search
+import os,struct
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 
 def encrypt_file(key, in_filename, chunksize=65536):
-    out_filename = in_filename+".enc"
-
+    out_filename = in_filename+".dal"
     iv = get_random_bytes(16)
     mode = AES.MODE_CBC
     encryptor = AES.new(key,mode,iv)
@@ -27,8 +26,7 @@ def encrypt_file(key, in_filename, chunksize=65536):
     os.unlink(in_filename)
 
 def decrypt_file(key, in_filename, chunksize=24*1024):
-    out_filename = in_filename[:-4]
-
+    out_filename = os.path.splitext(in_filename)[0]
     with open(in_filename, 'rb') as infile:
         origsize = struct.unpack('<Q',infile.read(struct.calcsize('Q')))
         iv = infile.read(16)
@@ -43,16 +41,5 @@ def decrypt_file(key, in_filename, chunksize=24*1024):
                 outfile.write(decryptor.decrypt(chunk))
             outfile.truncate(origsize[0])
 
+    print(out_filename)
     os.unlink(in_filename)
-
-
-'''
-password = b"This_is_password"
-key = hashlib.sha256(password).digest()
-in_filename = 'secret.hwp'
-encrypt_file(key,in_filename)
-print("Encrypted!")
-
-decrypt_file(key,in_filename=in_filename+".enc")
-print("Decrypted!")
-'''

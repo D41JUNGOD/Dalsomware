@@ -14,7 +14,7 @@ def search(default_path,ext_list):
 
 '''
 default_path = "C:\\Users\\oonja\\Desktop\\Ransomware"
-ext_list = [".hwp",".txt"]
+ext_list = [".hwp"]
 file, directory = search(default_path,ext_list)
 for i in file:
     print(i)
